@@ -1,0 +1,130 @@
+﻿@page "/AllStudents/EditStudent/{Id}"
+@using Project.Avalon.Shared.Arrays
+@using Project.Avalon.Shared.Models
+@using Project.Avalon.Web.Services.Students
+@inject AllStudentsService _AllStudentService
+@inject SemesterStudentsService _SemesterStudentService
+@inject SelectedStudentsService _SelectedStudentService
+@inject NavigationManager _navigationManager
+@inject ISnackbar Snackbar
+
+<MudPaper Class="pa-8 ma-5" Elevation="3">
+    <MudText Class="mb-2"><h1><strong>Edit Student</strong></h1></MudText>
+    <MudCard Elevation="2" Class="mt-4 pa-4">
+        <MudTextField @bind-Value="@Student.Id" Clearable="true" Label="Student Identification Number" Margin="Margin.Dense" />
+        <MudTextField Class="mt-4" @bind-Value="@Student.Name" Clearable="true" Label="Full Name" Margin="Margin.Dense" />
+        <MudTextField Class="mt-4" @bind-Value="@Student.Email" Clearable="true" Label="Email" Margin="Margin.Dense" />
+        <MudSelect Class="mt-4" T="string" @bind-Value="@Student.University" Label="University" AnchorOrigin="Origin.BottomCenter">
+            @foreach (var university in universities)
+            {
+                <MudSelectItem T="string" Value="@university">@university</MudSelectItem>
+            }
+        </MudSelect>
+        <MudSelect Class="mt-4" T="string" @bind-Value="@Student.Major" Label="Major" AnchorOrigin="Origin.BottomCenter">
+            @foreach (var major in majors)
+            {
+                <MudSelectItem T="string" Value="@major">@major</MudSelectItem>
+            }
+        </MudSelect>
+        <MudSelect Class="mt-4" T="string" @bind-Value="@Student.Minor" Label="Minor" AnchorOrigin="Origin.BottomCenter">
+            @foreach (var minor in minors)
+            {
+                <MudSelectItem T="string" Value="@minor">@minor</MudSelectItem>
+            }
+        </MudSelect>
+        <MudSelect Class="mt-4" T="string" @bind-Value="@Student.Concentration" Label="Concentration" AnchorOrigin="Origin.BottomCenter">
+            @foreach (var concentration in concentrations)
+            {
+                <MudSelectItem T="string" Value="@concentration">@concentration</MudSelectItem>
+            }
+        </MudSelect>
+        <MudSelect Class="mt-4" T="string" @bind-Value="@Student.College" Label="Colleges" AnchorOrigin="Origin.BottomCenter">
+            @foreach (var college in colleges)
+            {
+                <MudSelectItem T="string" Value="@college">@college</MudSelectItem>
+            }
+        </MudSelect>
+        <MudSelect Class="mt-4" T="string" @bind-Value="@Student.Department" Label="Departments" AnchorOrigin="Origin.BottomCenter">
+            @foreach (var department in departments)
+            {
+                <MudSelectItem T="string" Value="@department">@department</MudSelectItem>
+            }
+        </MudSelect>
+            <MudSelect Class="mt-4" T="string" @bind-Value="@Student.AdmitTerm" Label="Admit Term" AnchorOrigin="Origin.BottomCenter">
+            @foreach (var year in years)
+            {
+                @foreach (var term in terms){
+                <MudSelectItem T="string" Value="@year.ToString()">@term @year.ToString()</MudSelectItem>
+            }
+            }
+        </MudSelect>
+        <MudNumericField Class="mt-4" Immediate="false" @bind-Value="@Student.GPA" Format="N2" Label="GPA" T="double"></MudNumericField>
+        <MudNumericField Class="mt-4" Immediate="false" @bind-Value="@Student.CreditsCompleted" Label="Number of Credits Completed" T="int"></MudNumericField>
+        <MudDatePicker Label="Expected Graduation Date" @bind-Date="@Student.GraduationDate" DisableToolbar="true" />
+        <div>
+            <MudCheckBox Class="mt-4" @bind-Checked="@Student.HasGoodAcademicStanding" Label="Has Good Academic Standing" Color="Color.Dark"></MudCheckBox>
+        </div>
+    </MudCard>
+    <MudButton Class="mt-4 mr-4" OnClick="Edit" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Edit" Color="Color.Success">COMMIT CHANGES</MudButton>
+    <MudButton Class="mt-4 mr-4" OnClick="Cancel" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" Color="Color.Default">CANCEL</MudButton>
+    </MudPaper>
+
+@code {
+    [Parameter] public string Id { get; set; }
+
+    All Student = new All();
+    Current Semester = new Current();
+    Selected Referral = new Selected();
+
+    protected override async Task OnInitializedAsync()
+    {
+        //Initialize the year first
+        StudentArrays.initialize_year();
+
+        Student = await Task.Run(() => _AllStudentService.GetEachStudentBasedOnIdAsync(Id));
+        Semester = await Task.Run(() => _SemesterStudentService.GetEachStudentOfThisSemesterBasedOnIdAsync(Id));
+        Referral = await Task.Run(() => _SelectedStudentService.GetEachSelectedStudentSemesterBasedOnIdAsync(Id));
+    }
+
+    protected async void Edit()
+    {
+        if (Semester != null)
+        {
+            Semester.College = Student.College;
+            Semester.Concentration = Student.Concentration;
+            Semester.Department = Student.Department;
+            Semester.Email = Student.Email;
+            Semester.GPA = Student.GPA;
+            Semester.Id = Student.Id;
+            Semester.Major = Student.Major;
+            Semester.Minor = Student.Minor;
+            Semester.Name = Student.Name;
+            await _SemesterStudentService.UpdateCurrentStudent(Semester);
+        }
+        if (Referral != null)
+        {
+            Referral.Email = Student.Email;
+            Referral.Id = Student.Id;
+            Referral.University = Student.University;
+            Referral.Name = Student.Name;
+            await _SelectedStudentService.UpdateSelectedStudentAsync(Referral);
+        }
+        await _AllStudentService.UpdateStudentAsync(Student);
+        _navigationManager.NavigateTo($"/AllStudents/ViewStudent/{Student.Id}");
+        Snackbar.Add("Student successfully updated on all databases", Severity.Success);
+    }
+
+    void Cancel()
+    {
+        _navigationManager.NavigateTo("/AllStudents/ViewStudent/"+Student.Id);
+    }
+
+    private string[] universities = StudentArrays.michigan_universities;
+    private string[] majors = StudentArrays.majors;
+    private string[] minors = StudentArrays.minors;
+    private string[] concentrations = StudentArrays.concentrations;
+    private string[] colleges = StudentArrays.colleges;
+    private string[] departments = StudentArrays.departments;
+    private string[] terms = StudentArrays.terms;
+    private int[] years = StudentArrays.years;
+}

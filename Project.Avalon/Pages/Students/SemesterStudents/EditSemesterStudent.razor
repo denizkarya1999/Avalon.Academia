@@ -1,0 +1,111 @@
+﻿@page "/SemesterStudents/EditStudent/{Id}"
+@using Project.Avalon.Shared.Arrays
+@using Project.Avalon.Shared.Models
+@using Project.Avalon.Web.Services.Students
+@inject AllStudentsService _AllStudentService
+@inject SemesterStudentsService _SemesterStudentService
+@inject SelectedStudentsService _SelectedStudentService
+@inject NavigationManager _navigationManager
+@inject ISnackbar Snackbar
+
+<MudPaper Class="pa-8 ma-5" Elevation="3">
+    <MudText Class="mb-2"><h1><strong>Edit Student</strong></h1></MudText>
+    <MudCard Elevation="2" Class="mt-4 pa-4">
+        <MudTextField @bind-Value="@Semester.Id" Clearable="true" Label="Student Identification Number" Margin="Margin.Dense" />
+        <MudTextField Class="mt-4" @bind-Value="@Semester.Name" Clearable="true" Label="Full Name" Margin="Margin.Dense" />
+        <MudTextField Class="mt-4" @bind-Value="@Semester.Email" Clearable="true" Label="Email" Margin="Margin.Dense" />
+        <MudSelect Class="mt-4" T="string" @bind-Value="@Semester.Major" Label="Major" AnchorOrigin="Origin.BottomCenter">
+            @foreach (var major in majors)
+            {
+                <MudSelectItem T="string" Value="@major">@major</MudSelectItem>
+            }
+        </MudSelect>
+        <MudSelect Class="mt-4" T="string" @bind-Value="@Semester.Minor" Label="Minor" AnchorOrigin="Origin.BottomCenter">
+            @foreach (var minor in minors)
+            {
+                <MudSelectItem T="string" Value="@minor">@minor</MudSelectItem>
+            }
+        </MudSelect>
+        <MudSelect Class="mt-4" T="string" @bind-Value="@Semester.Concentration" Label="Concentration" AnchorOrigin="Origin.BottomCenter">
+            @foreach (var concentration in concentrations)
+            {
+                <MudSelectItem T="string" Value="@concentration">@concentration</MudSelectItem>
+            }
+            </MudSelect>
+            <MudSelect Class="mt-4" T="string" @bind-Value="@Semester.College" Label="Colleges" AnchorOrigin="Origin.BottomCenter">
+            @foreach (var college in colleges)
+            {
+                <MudSelectItem T="string" Value="@college">@college</MudSelectItem>
+            }
+        </MudSelect>
+        <MudSelect Class="mt-4" T="string" @bind-Value="@Semester.Department" Label="Departments" AnchorOrigin="Origin.BottomCenter">
+            @foreach (var department in departments)
+            {
+                <MudSelectItem T="string" Value="@department">@department</MudSelectItem>
+            }
+        </MudSelect>
+        <MudNumericField Class="mt-4" Immediate="false" @bind-Value="@Semester.GPA" Format="N2" Label="GPA" T="double"></MudNumericField>
+            <div>
+            <MudCheckBox Class="mt-4" @bind-Checked="@Semester.HasNoComplains" Label="Recieved no complains from other students" Color="Color.Dark"></MudCheckBox>
+        </div>
+        <MudTextField Class="mt-4"  Label="Notes" T="string" Variant="Variant.Outlined" @bind-Value="@Semester.Notes" Lines="3" />
+    </MudCard>
+    <MudButton Class="mt-4 mr-4" OnClick="Edit" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Edit" Color="Color.Success">COMMIT CHANGES</MudButton>
+    <MudButton Class="mt-4 mr-4" OnClick="Cancel" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" Color="Color.Default">CANCEL</MudButton>
+</MudPaper>
+
+@code {
+    [Parameter] public string Id { get; set; }
+
+    All Student = new All();
+    Current Semester = new Current();
+    Selected Referral = new Selected();
+
+    protected override async Task OnInitializedAsync()
+    {
+        //Initialize the year first
+        StudentArrays.initialize_year();
+
+        Student = await Task.Run(() => _AllStudentService.GetEachStudentBasedOnIdAsync(Id));
+        Semester = await Task.Run(() => _SemesterStudentService.GetEachStudentOfThisSemesterBasedOnIdAsync(Id));
+        Referral = await Task.Run(() => _SelectedStudentService.GetEachSelectedStudentSemesterBasedOnIdAsync(Id));
+    }
+
+    protected async void Edit()
+    {
+        if (Student != null)
+        {
+            Student.College = Semester.College;
+            Student.Concentration = Semester.Concentration;
+            Student.Department = Semester.Department;
+            Student.Email = Semester.Email;
+            Student.GPA = Semester.GPA;
+            Student.Id = Semester.Id;
+            Student.Major = Semester.Major;
+            Student.Minor = Semester.Minor;
+            Student.Name = Semester.Name;
+            await _AllStudentService.UpdateStudentAsync(Student);
+        }
+        if (Referral != null)
+        {
+            Referral.Email = Semester.Email;
+            Referral.Id = Semester.Id;
+            Referral.Name = Semester.Name;
+            await _SelectedStudentService.UpdateSelectedStudentAsync(Referral);
+        }
+        await _SemesterStudentService.UpdateCurrentStudent(Semester);
+        _navigationManager.NavigateTo($"/SemesterStudents/ViewStudent/{Semester.Id}");
+        Snackbar.Add("Student successfully updated on all databases", Severity.Success);
+    }
+
+    void Cancel()
+    {
+        _navigationManager.NavigateTo("/SemesterStudents/ViewStudent/"+Semester.Id);
+    }
+
+    private string[] majors = StudentArrays.majors;
+    private string[] minors = StudentArrays.minors;
+    private string[] concentrations = StudentArrays.concentrations;
+    private string[] colleges = StudentArrays.colleges;
+    private string[] departments = StudentArrays.departments;
+}

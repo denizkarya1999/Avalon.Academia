@@ -1,0 +1,52 @@
+﻿@page "/Referrals/Delete/{Id}"
+@using Project.Avalon.Shared.Models
+@using Project.Avalon.Web.Services.Students
+@inject SelectedStudentsService _SelectedStudentService
+@inject AllStudentsService _AllStudentService
+@inject NavigationManager _navigationManager
+@inject ISnackbar Snackbar
+
+<MudPaper Class="pa-8 ma-5" Elevation="3">
+    <MudText Class="mb-2"><h1><strong>Remove Referral</strong></h1></MudText>
+    <MudText Class="mb-2">Are you sure you no longer want to refer this person?</MudText>
+    <MudCard Elevation="2" Class="mt-4 pa-4">
+        <MudText Class="mb-2"><h1><strong>@Referral.Name</strong></h1></MudText>
+    <MudText><MudIcon Icon="@Icons.Material.Filled.School" Size="Size.Small" /> Studies at @Referral.University</MudText>
+     <MudText><MudIcon Icon="@Icons.Material.Filled.CardMembership" Size="Size.Small" /> Assigned ID is @Referral.Id</MudText>
+     <MudText><MudIcon Icon="@Icons.Material.Filled.Email" Size="Size.Small" /> Send email through <strong><a href="mailto:@Referral.Email"> @Referral.Email</a></strong></MudText>
+     <MudCard  Elevation="2" Class="mt-2 pa-4">
+                         <MudText Class="mb-2" ><MudIcon Icon="@Icons.Material.Filled.Notes" Size="Size.Small" /> Referral Notes</MudText>
+                         <MudDivider Class="mb-2"/>
+                         <MudText Typo="Typo.body2">@Referral.ReferralNotes</MudText>
+                         </MudCard>
+        </MudCard>
+        <MudButton Class="mt-4 mr-4" OnClick="RemoveStudent" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Delete" Color="Color.Error">REMOVE</MudButton>
+<MudButton Class="mt-4 mr-4" OnClick="Cancel" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" Color="Color.Default">CANCEL</MudButton>
+    </MudPaper>
+
+@code {
+    [Parameter] public string Id { get; set; }
+
+    Selected Referral = new Selected();
+    All Student = new All();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Referral = await Task.Run(() => _SelectedStudentService.GetEachSelectedStudentSemesterBasedOnIdAsync(Id));
+        Student = await Task.Run(() => _AllStudentService.GetEachStudentBasedOnIdAsync(Id));
+    }
+
+    protected async void RemoveStudent()
+    {
+        Student.IsSelectedForReferral = false;
+        await _AllStudentService.UpdateStudentAsync(Student);
+        await _SelectedStudentService.DeleteSelectedStudentAsync(Referral);
+        _navigationManager.NavigateTo("/Referrals");
+        Snackbar.Add("Student successfully removed from referrals database", Severity.Success);
+    }
+
+    void Cancel()
+    {
+        _navigationManager.NavigateTo("/Referrals/View/"+Referral.Id);
+    }
+}

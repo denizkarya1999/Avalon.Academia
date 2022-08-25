@@ -1,0 +1,103 @@
+﻿@page "/AllStudents/AddNewStudent"
+@using Project.Avalon.Shared.Models
+@using Project.Avalon.Shared.Arrays
+@using Project.Avalon.Web.Services.Students
+@using Project.Avalon.Web.Pages.Students.AllStudents
+@inject AllStudentsService _allStudentsService
+@inject NavigationManager _navigationManager
+@inject ISnackbar Snackbar
+
+<MudPaper Class="pa-8 ma-5 mt-2" Elevation="3">
+    <MudText Class="mb-2"><h1><strong>Add Student</strong></h1></MudText>
+    <MudCard Elevation="2" Class="mt-4 pa-4">
+        <MudTextField @bind-Value="@Student.Id" Clearable="true" Label="Student Identification Number" Margin="Margin.Dense" />
+        <MudTextField Class="mt-4" @bind-Value="@Student.Name" Clearable="true" Label="Full Name" Margin="Margin.Dense" />
+        <MudTextField Class="mt-4" @bind-Value="@Student.Email" Clearable="true" Label="Email" Margin="Margin.Dense" />
+        <MudSelect Class="mt-4" T="string" @bind-Value="@Student.University" Label="University" AnchorOrigin="Origin.BottomCenter">
+            @foreach (var university in universities)
+            {
+                <MudSelectItem T="string" Value="@university">@university</MudSelectItem>
+            }
+        </MudSelect>
+        <MudSelect Class="mt-4" T="string" @bind-Value="@Student.Major" Label="Major" AnchorOrigin="Origin.BottomCenter">
+            @foreach (var major in majors)
+            {
+                <MudSelectItem T="string" Value="@major">@major</MudSelectItem>
+            }
+        </MudSelect>
+        <MudSelect Class="mt-4" T="string" @bind-Value="@Student.Minor" Label="Minor" AnchorOrigin="Origin.BottomCenter">
+            @foreach (var minor in minors)
+            {
+                <MudSelectItem T="string" Value="@minor">@minor</MudSelectItem>
+            }
+        </MudSelect>
+        <MudSelect Class="mt-4" T="string" @bind-Value="@Student.Concentration" Label="Concentration" AnchorOrigin="Origin.BottomCenter">
+            @foreach (var concentration in concentrations)
+            {
+                <MudSelectItem T="string" Value="@concentration">@concentration</MudSelectItem>
+            }
+        </MudSelect>
+        <MudSelect Class="mt-4" T="string" @bind-Value="@Student.College" Label="Colleges" AnchorOrigin="Origin.BottomCenter">
+            @foreach (var college in colleges)
+            {
+                <MudSelectItem T="string" Value="@college">@college</MudSelectItem>
+            }
+        </MudSelect>
+        <MudSelect Class="mt-4" T="string" @bind-Value="@Student.Department" Label="Departments" AnchorOrigin="Origin.BottomCenter">
+            @foreach (var department in departments)
+            {
+                <MudSelectItem T="string" Value="@department">@department</MudSelectItem>
+            }
+        </MudSelect>
+            <MudSelect Class="mt-4" T="string" @bind-Value="@Student.AdmitTerm" Label="Admit Term" AnchorOrigin="Origin.BottomCenter">
+            @foreach (var year in years)
+            {
+                @foreach (var term in terms){
+                <MudSelectItem T="string" Value="@year.ToString()">@term @year.ToString()</MudSelectItem>
+            }
+            }
+        </MudSelect>
+        <MudNumericField Class="mt-4" Immediate="false" @bind-Value="@Student.GPA" Format="N2" Label="GPA" T="double"></MudNumericField>
+        <MudNumericField Class="mt-4" Immediate="false" @bind-Value="@Student.CreditsCompleted" Label="Number of Credits Completed" T="int"></MudNumericField>
+        <MudDatePicker Label="Expected Graduation Date" @bind-Date="@Student.GraduationDate" DisableToolbar="true" />
+        <div>
+            <MudCheckBox Class="mt-4" @bind-Checked="@Student.HasGoodAcademicStanding" Label="Has Good Academic Standing" Color="Color.Dark"></MudCheckBox>
+        </div>
+    </MudCard>
+    <MudButton Class="mt-4 mr-4" OnClick="CreateStudent" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" Color="Color.Success">ADD STUDENT</MudButton>
+<MudButton Class="mt-4 mr-4" OnClick="Cancel" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" Color="Color.Default">CANCEL</MudButton>
+</MudPaper>
+
+@code {
+    All Student = new All();
+
+    protected override async Task OnInitializedAsync()
+    {
+        //Initialize the year first
+        StudentArrays.initialize_year();
+
+        //Initialize the checkbox as false
+        Student.HasGoodAcademicStanding = false;
+    }
+
+    protected async void CreateStudent()
+    {
+        await _allStudentsService.CreateNewStudentAsync(Student);
+        _navigationManager.NavigateTo("/AllStudents");
+        Snackbar.Add("Student successfully added to database", Severity.Success);
+    }
+
+    void Cancel()
+    {
+        _navigationManager.NavigateTo("/AllStudents");
+    }
+
+    private string[] universities = StudentArrays.michigan_universities;
+    private string[] majors = StudentArrays.majors;
+    private string[] minors = StudentArrays.minors;
+    private string[] concentrations = StudentArrays.concentrations;
+    private string[] colleges = StudentArrays.colleges;
+    private string[] departments = StudentArrays.departments;
+    private string[] terms = StudentArrays.terms;
+    private int[] years = StudentArrays.years;
+}

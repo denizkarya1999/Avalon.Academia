@@ -1,0 +1,107 @@
+﻿@page "/"
+@using Microsoft.AspNetCore.Components.Web.Extensions.Head
+
+<Title Value="Avalon: Home" />
+
+    <MudPaper Class="pa-8 ma-5 mt-2"  Elevation="3">
+            <MudStack Class="align-center mb-2" Spacing="6">
+                <MudText Typo="Typo.h3">Tired of students asking for referral?<b> No worries!</b></MudText>
+                <MudImage Src="Photos/graduation.jpg" Height="350" Class="rounded-lg mx-auto my-auto"/>
+                <MudText Typo="Typo.h3"><b>Avalon&trade;</b> is here.</MudText>
+                 <MudText> We understand that it is hard for professors to remember every student they had in their classroom. Therefore, we help them to determine who they can 
+                     select for referral. Avalon provides three databases which are all students, term students and referrals and provides services to 
+                     add, edit, delete and view each student on each specific database. Additionally, there is notification and transfer functions.
+      Interested? Then follow our instructions to use Avalon effectively and select the best student you had for referral!</MudText>
+                </MudStack>
+                <MudStack Class="mt-4 mb-2" >
+          <MudText Typo="Typo.h5"><b>Manage All Students Database</b></MudText>
+           <MudExpansionPanels>
+               <MudExpansionPanel Text="Add New Student">
+                    <MudImage Src="Screenshots/All/Add/Add1.png" Width="1000" Height="500" Elevation="25" Class="ma-4"/>
+                   <MudImage Src="Screenshots/All/Add/Add2.png" Width="1000" Height="500" Elevation="25" Class="ma-4"/>
+                <MudImage Src="Screenshots/All/Add/Add3.png" Width="1000" Height="500" Elevation="25" Class="ma-4"/>
+               </MudExpansionPanel>
+               <MudExpansionPanel Text="View Each Student">
+                   <MudImage Src="Screenshots/All/View/View1.png" Width="1000" Height="500" Elevation="25" Class="ma-4"/>
+                   <MudImage Src="Screenshots/All/View/View2.png" Width="1000" Height="500" Elevation="25" Class="ma-4"/>
+                   </MudExpansionPanel>
+                   <MudExpansionPanel Text="Refer Student">
+                   <MudImage Src="Screenshots/All/Referral/Referral1.png" Width="1000" Height="500" Elevation="25" Class="ma-4"/>
+                   <MudImage Src="Screenshots/All/Referral/Referral2.png" Width="1000" Height="500" Elevation="25" Class="ma-4"/>
+                   <MudImage Src="Screenshots/All/Referral/Referral3.png" Width="1000" Height="500" Elevation="25" Class="ma-4"/>
+               </MudExpansionPanel>
+               <MudExpansionPanel Text="Select Student For The Current Term">
+                   <MudImage Src="Screenshots/All/Current/Current1.png" Width="1000" Height="500" Elevation="25" Class="ma-4"/>
+                   <MudImage Src="Screenshots/All/Current/Current2.png" Width="1000" Height="500" Elevation="25" Class="ma-4"/>
+                   <MudImage Src="Screenshots/All/Current/Current3.png" Width="1000" Height="500" Elevation="25" Class="ma-4"/>
+               </MudExpansionPanel>
+                   <MudExpansionPanel Text="Edit Student">
+                   <MudImage Src="Screenshots/All/Edit/Edit1.png" Width="1000" Height="500" Elevation="25" Class="ma-4"/>
+                   <MudImage Src="Screenshots/All/Edit/Edit2.png" Width="1000" Height="500" Elevation="25" Class="ma-4"/>
+                   <MudImage Src="Screenshots/All/Edit/Edit3.png" Width="1000" Height="500" Elevation="25" Class="ma-4"/>
+               <MudImage Src="Screenshots/All/Edit/Edit4.png" Width="1000" Height="500" Elevation="25" Class="ma-4"/>
+               </MudExpansionPanel>
+               <MudExpansionPanel Text="Delete Student">
+                   <MudImage Src="Screenshots/All/Delete/Delete1.png" Width="1000" Height="500" Elevation="25" Class="ma-4"/>
+                   <MudImage Src="Screenshots/All/Delete/Delete2.png" Width="1000" Height="500" Elevation="25" Class="ma-4"/>
+                   <MudImage Src="Screenshots/All/Delete/Delete3.png" Width="1000" Height="500" Elevation="25" Class="ma-4"/>
+               <MudImage Src="Screenshots/All/Delete/Delete4.png" Width="1000" Height="500" Elevation="25" Class="ma-4"/>
+               </MudExpansionPanel>
+               </MudExpansionPanels>
+               <MudStack Class="mt-4 mb-2" >
+          <MudText Typo="Typo.h5"><b>Manage Semester Students Database</b></MudText>
+           <MudExpansionPanels>
+               <MudExpansionPanel Text="View Each Student">
+                   <MudImage Src="Screenshots/Current/View/View1.png" Width="1000" Height="500" Elevation="25" Class="ma-4"/>
+                   <MudImage Src="Screenshots/Current/View/View2.png" Width="1000" Height="500" Elevation="25" Class="ma-4"/>
+                   </MudExpansionPanel>
+                   <MudExpansionPanel Text="Refer Student">
+                   <MudImage Src="Screenshots/Current/Referral/Referral1.png" Width="1000" Height="500" Elevation="25" Class="ma-4"/>
+                   <MudImage Src="Screenshots/Current/Referral/Referral2.png" Width="1000" Height="500" Elevation="25" Class="ma-4"/>
+                   <MudImage Src="Screenshots/Current/Referral/Referral3.png" Width="1000" Height="500" Elevation="25" Class="ma-4"/>
+               </MudExpansionPanel>
+               <MudExpansionPanel Text="Edit Student">
+                   <MudImage Src="Screenshots/Current/Edit/Edit1.png" Width="1000" Height="500" Elevation="25" Class="ma-4"/>
+                   <MudImage Src="Screenshots/Current/Edit/Edit2.png" Width="1000" Height="500" Elevation="25" Class="ma-4"/>
+                   <MudImage Src="Screenshots/Current/Edit/Edit3.png" Width="1000" Height="500" Elevation="25" Class="ma-4"/>
+               <MudImage Src="Screenshots/Current/Edit/Edit4.png" Width="1000" Height="500" Elevation="25" Class="ma-4"/>
+               </MudExpansionPanel>
+               <MudExpansionPanel Text="Delete Student">
+                   <MudImage Src="Screenshots/Current/Delete/Delete1.png" Width="1000" Height="500" Elevation="25" Class="ma-4"/>
+                   <MudImage Src="Screenshots/Current/Delete/Delete2.png" Width="1000" Height="500" Elevation="25" Class="ma-4"/>
+                   <MudImage Src="Screenshots/Current/Delete/Delete3.png" Width="1000" Height="500" Elevation="25" Class="ma-4"/>
+               <MudImage Src="Screenshots/Current/Delete/Delete4.png" Width="1000" Height="500" Elevation="25" Class="ma-4"/>
+               </MudExpansionPanel>
+               </MudExpansionPanels>
+               </MudStack>
+               <MudStack Class="mt-4 mb-2" >
+          <MudText Typo="Typo.h5"><b>Manage Referrals Database</b></MudText>
+           <MudExpansionPanels>
+               <MudExpansionPanel Text="View Each Student">
+                   <MudImage Src="Screenshots/Referrals/View/View1.png" Width="1000" Height="500" Elevation="25" Class="ma-4"/>
+                   <MudImage Src="Screenshots/Referrals/View/View2.png" Width="1000" Height="500" Elevation="25" Class="ma-4"/>
+                   </MudExpansionPanel>
+                   <MudExpansionPanel Text="Let Your Student Know">
+                   <MudImage Src="Screenshots/Referrals/Notify/Notify1.png" Width="1000" Height="500" Elevation="25" Class="ma-4"/>
+                   <MudImage Src="Screenshots/Referrals/Notify/Notify2.png" Width="1000" Height="500" Elevation="25" Class="ma-4"/>
+                   <MudImage Src="Screenshots/Referrals/Notify/Notify3.png" Width="1000" Height="500" Elevation="25" Class="ma-4"/>
+               </MudExpansionPanel>
+               <MudExpansionPanel Text="Edit Student">
+                   <MudImage Src="Screenshots/Referrals/Edit/Edit1.png" Width="1000" Height="500" Elevation="25" Class="ma-4"/>
+                   <MudImage Src="Screenshots/Referrals/Edit/Edit2.png" Width="1000" Height="500" Elevation="25" Class="ma-4"/>
+                   <MudImage Src="Screenshots/Referrals/Edit/Edit3.png" Width="1000" Height="500" Elevation="25" Class="ma-4"/>
+               <MudImage Src="Screenshots/Referrals/Edit/Edit4.png" Width="1000" Height="500" Elevation="25" Class="ma-4"/>
+               </MudExpansionPanel>
+               <MudExpansionPanel Text="Delete Student">
+                   <MudImage Src="Screenshots/Referrals/Delete/Delete1.png" Width="1000" Height="500" Elevation="25" Class="ma-4"/>
+                   <MudImage Src="Screenshots/Referrals/Delete/Delete2.png" Width="1000" Height="500" Elevation="25" Class="ma-4"/>
+                   <MudImage Src="Screenshots/Referrals/Delete/Delete3.png" Width="1000" Height="500" Elevation="25" Class="ma-4"/>
+               <MudImage Src="Screenshots/Referrals/Delete/Delete4.png" Width="1000" Height="500" Elevation="25" Class="ma-4"/>
+               </MudExpansionPanel>
+               </MudExpansionPanels>
+               </MudStack>
+          </MudStack>
+                <MudStack Class="align-center mt-4">
+             <MudText Typo="Typo.subtitle2">2022 &copy; Deniz K Acikbas. All rights are reserved.</MudText>
+             </MudStack>
+                </MudPaper>

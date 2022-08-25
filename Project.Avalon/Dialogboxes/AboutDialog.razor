@@ -1,0 +1,31 @@
+﻿@inject NavigationManager _navigationManager
+
+<MudDialog>
+        <DialogContent>
+            <p><b>Project Name:</b> Avalon</p>
+            <p><b>Edition:</b> Academia Edition</p>
+            <p><b>Version:</b> 1.0</p>
+            <p><b>Release Date:</b> August 24th 2022</p>
+            <p><b>Created by:</b> Deniz K. Acikbas</p>
+        <p><b>Technologies:</b></p>
+        <MudChip Variant="Variant.Text">C#</MudChip>
+        <MudChip Variant="Variant.Text">Microsoft SQL Server</MudChip>
+        <MudChip Variant="Variant.Text">Entity Framework Core</MudChip>
+        <MudChip Variant="Variant.Text">MudBlazor</MudChip>
+            </DialogContent>
+            <DialogActions>
+            <MudButton Color="Color.Warning" OnClick="SourceCode">Download Source Code</MudButton>
+            <MudButton Color="Color.Warning" OnClick="Submit">Ok</MudButton>
+            </DialogActions>
+    </MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    void Submit() => MudDialog.Close(DialogResult.Ok(true));
+
+    private void SourceCode()
+    {
+        _navigationManager.NavigateTo("https://github.com/denizkarya1999");
+    }
+}

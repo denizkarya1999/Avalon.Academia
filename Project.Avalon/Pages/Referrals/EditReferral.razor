@@ -1,0 +1,79 @@
+﻿@page "/Referrals/Edit/{Id}"
+@using Project.Avalon.Shared.Arrays
+@using Project.Avalon.Shared.Models
+@using Project.Avalon.Web.Services.Students
+@inject AllStudentsService _AllStudentService
+@inject SemesterStudentsService _SemesterStudentService
+@inject SelectedStudentsService _SelectedStudentService
+@inject NavigationManager _navigationManager
+@inject ISnackbar Snackbar
+
+<MudPaper Class="pa-8 ma-5" Elevation="3">
+    <MudText Class="mb-2"><h1><strong>Edit Student</strong></h1></MudText>
+    <MudCard Elevation="2" Class="mt-4 pa-4">
+         <MudTextField @bind-Value="@Referral.Id" Clearable="true" Label="Student Identification Number" Margin="Margin.Dense" />
+        <MudTextField Class="mt-4" @bind-Value="@Referral.Name" Clearable="true" Label="Full Name" Margin="Margin.Dense" />
+        <MudTextField Class="mt-4" @bind-Value="@Referral.Email" Clearable="true" Label="Email" Margin="Margin.Dense" />
+        <MudSelect Class="mt-4" T="string" @bind-Value="@Referral.University" Label="University" AnchorOrigin="Origin.BottomCenter">
+            @foreach (var university in universities)
+            {
+                <MudSelectItem T="string" Value="@university">@university</MudSelectItem>
+            }
+        </MudSelect>
+        <MudTextField Class="mt-4"  Label="Referral Notes" T="string"Variant="Variant.Outlined" @bind-Value="@Referral.ReferralNotes" Lines="3" />
+        </MudCard>
+         <MudButton Class="mt-4 mr-4" OnClick="Edit" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Edit" Color="Color.Success">COMMIT CHANGES</MudButton>
+    <MudButton Class="mt-4 mr-4" OnClick="Cancel" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" Color="Color.Default">CANCEL</MudButton>
+        </MudPaper>
+
+@code {
+    [Parameter] public string Id { get; set; }
+
+    All Student = new All();
+    Current Semester = new Current();
+    Selected Referral = new Selected();
+
+    protected override async Task OnInitializedAsync()
+    {
+        //Initialize the year first
+        StudentArrays.initialize_year();
+
+        Student = await Task.Run(() => _AllStudentService.GetEachStudentBasedOnIdAsync(Id));
+        Semester = await Task.Run(() => _SemesterStudentService.GetEachStudentOfThisSemesterBasedOnIdAsync(Id));
+        Referral = await Task.Run(() => _SelectedStudentService.GetEachSelectedStudentSemesterBasedOnIdAsync(Id));
+    }
+
+    protected async void Edit()
+    {
+        if (Student != null)
+        {
+            Student.Id = Referral.Id;
+            Student.University = Referral.University;
+            Student.Name = Referral.Name;
+            Student.Email = Referral.Email;
+            await _AllStudentService.UpdateStudentAsync(Student);
+        }
+        if (Semester != null)
+        {
+            Semester.Id = Referral.Id;
+            Semester.Name = Referral.Name;
+            Semester.Email = Referral.Email;
+            await _SemesterStudentService.UpdateCurrentStudent(Semester);
+        }
+        await _SelectedStudentService.UpdateSelectedStudentAsync(Referral);
+        _navigationManager.NavigateTo("/Referrals/View/"+Referral.Id);
+        Snackbar.Add("Student successfully updated on all databases", Severity.Success);
+    }
+
+    void Cancel()
+    {
+        _navigationManager.NavigateTo("/Referrals/View/"+Referral.Id);
+    }
+
+    private string[] universities = StudentArrays.michigan_universities;
+    private string[] majors = StudentArrays.majors;
+    private string[] minors = StudentArrays.minors;
+    private string[] concentrations = StudentArrays.concentrations;
+    private string[] colleges = StudentArrays.colleges;
+    private string[] departments = StudentArrays.departments;
+}

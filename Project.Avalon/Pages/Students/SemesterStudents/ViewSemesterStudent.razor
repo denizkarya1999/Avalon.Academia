@@ -1,0 +1,91 @@
+﻿@page "/SemesterStudents/ViewStudent/{Id}"
+@using Project.Avalon.Shared.Models
+@using Project.Avalon.Web.Services.Students
+@inject SemesterStudentsService _SemesterStudentService
+@inject SelectedStudentsService _SelectedStudentService
+@inject NavigationManager _navigationManager
+@inject ISnackbar Snackbar
+
+
+<MudPaper Class="pa-8 ma-5" Elevation="3">
+     <MudText Class="mb-2"><h1><strong>@Semester.Name</strong></h1></MudText>
+     <MudText><MudIcon Icon="@Icons.Material.Filled.CardMembership" Size="Size.Small" /> Assigned ID is @Semester.Id</MudText>
+     <MudText><MudIcon Icon="@Icons.Material.Filled.Email" Size="Size.Small" /> Send email through <strong><a href="mailto:@Semester.Email"> @Semester.Email</a></strong></MudText>
+     <MudText><MudIcon Icon="@Icons.Material.Filled.Book" Size="Size.Small" /> Majoring in @Semester.Major</MudText>
+     @if (Semester.Minor == null)
+                    {
+                    } else
+                    {
+                        <MudText><MudIcon Icon="@Icons.Filled.BookmarkBorder" Size="Size.Small" /> Minoring in @Semester.Minor</MudText>
+                    }
+    @if (Semester.Concentration == null)
+                    {
+                    } else
+                    {
+                        <MudText><MudIcon Icon="@Icons.Material.Filled.PushPin" Size="Size.Small" /> Concentrated on @Semester.Concentration</MudText>
+                    }
+    <MudText><MudIcon Icon="@Icons.Material.Filled.Business" Size="Size.Small" /> Is affiliated with @Semester.College</MudText>
+    <MudText><MudIcon Icon="@Icons.Material.Filled.ContactPhone" Size="Size.Small" /> @Semester.Department can be contacted</MudText>
+    <MudText><MudIcon Icon="@Icons.Material.Filled.Score" Size="Size.Small" /> Has @Semester.GPA.ToString("N2") GPA</MudText>
+    @if(Semester.HasNoComplains == true)
+                    {
+        <MudText><MudIcon Icon="@Icons.Filled.Check" Color="Color.Success" Size="Size.Small" /> No complains recieved from other students</MudText>
+    } else if (Semester.HasNoComplains == null)
+    {
+        <MudText><MudIcon Icon="@Icons.Filled.QuestionMark" Color="Color.Warning" Size="Size.Small" /> Not available at this moment</MudText>
+    }
+    else
+                    {
+                    <MudText><MudIcon Icon="@Icons.Filled.Error" Color="Color.Error" Size="Size.Small" /> There are complains recieved about this student</MudText>
+                    }
+                     <MudCard  Elevation="2" Class="mt-2 pa-4">
+                         <MudText Class="mb-2" ><MudIcon Icon="@Icons.Material.Filled.Notes" Size="Size.Small" /> Notes</MudText>
+                         <MudDivider Class="mb-2"/>
+                         <MudText Typo="Typo.body2">@Semester.Notes</MudText>
+                         </MudCard>
+    @if(Semester.IsSelectedForReferral== false)
+    {
+        <MudButton Class="mt-4 mr-4" OnClick="SelectForReferral" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Star" Color="Color.Success">SELECT FOR REFERRAL</MudButton>
+    }
+    else
+    {
+        <MudButton Class="mt-4 mr-4" OnClick="UnSelectForReferral" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.RemoveCircle" Color="Color.Dark">REMOVE STUDENT FROM REFERRALS</MudButton>
+    }
+     <MudButton Class="mt-4 mr-4" Variant="Variant.Filled" Href="@($"/SemesterStudents/EditStudent/{Semester.Id}")" StartIcon="@Icons.Material.Filled.Edit" Color="Color.Warning">EDIT STUDENT</MudButton>
+    <MudButton Class="mt-4 mr-4" Variant="Variant.Filled" Href="@($"/SemesterStudents/DeleteStudent/{Semester.Id}")" StartIcon="@Icons.Material.Filled.Delete" Color="Color.Error">REMOVE STUDENT</MudButton>
+</MudPaper>
+
+@code {
+    [Parameter] public string Id { get; set; }
+
+    Current Semester = new Current();
+    Selected Referral = new Selected();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Semester = await Task.Run(() => _SemesterStudentService.GetEachStudentOfThisSemesterBasedOnIdAsync(Id));
+        Referral = await Task.Run(() => _SelectedStudentService.GetEachSelectedStudentSemesterBasedOnIdAsync(Id));
+    }
+
+    protected async void SelectForReferral()
+    {
+        Semester.IsSelectedForReferral = true;
+        if (Referral == null)
+        {
+            await _SemesterStudentService.SelectForReferralFromCurrent(Semester);
+        }
+        _navigationManager.NavigateTo("/SemesterStudents/ViewStudent/"+Semester.Id);
+        Snackbar.Add("Student successfully selected for referral", Severity.Success);
+    }
+
+    protected async void UnSelectForReferral()
+    {
+        Semester.IsSelectedForReferral = false;
+        if (Referral != null)
+        {
+            await _SelectedStudentService.DeleteSelectedStudentAsync(Referral);
+        }
+        _navigationManager.NavigateTo("/SemesterStudents/ViewStudent/"+Semester.Id);
+        Snackbar.Add("Student successfully removed from referral list", Severity.Success);
+    }
+}

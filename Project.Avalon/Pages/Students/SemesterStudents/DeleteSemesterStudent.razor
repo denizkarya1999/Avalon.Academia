@@ -1,0 +1,78 @@
+﻿@page "/SemesterStudents/DeleteStudent/{Id}"
+@using Project.Avalon.Shared.Models
+@using Project.Avalon.Web.Services.Students
+@inject SemesterStudentsService _SemesterStudentService
+@inject AllStudentsService _AllStudentService
+@inject NavigationManager _navigationManager
+@inject ISnackbar Snackbar
+
+<MudPaper Class="pa-8 ma-5" Elevation="3">
+    <MudText Class="mb-2"><h1><strong>Remove Student</strong></h1></MudText>
+     <MudText Class="mb-2">Are you sure you want to remove the student from this term?</MudText>
+      <MudCard Elevation="2" Class="mt-4 pa-4">
+              <MudText Class="mb-2"><h1><strong>@Semester.Name</strong></h1></MudText>
+     <MudText><MudIcon Icon="@Icons.Material.Filled.CardMembership" Size="Size.Small" /> Assigned ID is @Semester.Id</MudText>
+     <MudText><MudIcon Icon="@Icons.Material.Filled.Email" Size="Size.Small" /> Send email through <strong><a href="mailto:@Semester.Email"> @Semester.Email</a></strong></MudText>
+     <MudText><MudIcon Icon="@Icons.Material.Filled.Book" Size="Size.Small" /> Majoring in @Semester.Major</MudText>
+     @if (Semester.Minor == null)
+                    {
+                    } else
+                    {
+                        <MudText><MudIcon Icon="@Icons.Filled.BookmarkBorder" Size="Size.Small" /> Minoring in @Semester.Minor</MudText>
+                    }
+    @if (Semester.Concentration == null)
+                    {
+                    } else
+                    {
+                        <MudText><MudIcon Icon="@Icons.Material.Filled.PushPin" Size="Size.Small" /> Concentrated on @Semester.Concentration</MudText>
+                    }
+    <MudText><MudIcon Icon="@Icons.Material.Filled.Business" Size="Size.Small" /> Is affiliated with @Semester.College</MudText>
+    <MudText><MudIcon Icon="@Icons.Material.Filled.ContactPhone" Size="Size.Small" /> @Semester.Department can be contacted</MudText>
+    <MudText><MudIcon Icon="@Icons.Material.Filled.Score" Size="Size.Small" /> Has @Semester.GPA.ToString("N2") GPA</MudText>
+    @if(Semester.HasNoComplains == true)
+                    {
+        <MudText><MudIcon Icon="@Icons.Filled.Check" Color="Color.Success" Size="Size.Small" /> No complains recieved from other students</MudText>
+    } else if (Semester.HasNoComplains == null)
+    {
+        <MudText><MudIcon Icon="@Icons.Filled.QuestionMark" Color="Color.Warning" Size="Size.Small" /> Not available at this moment</MudText>
+    }
+    else
+                    {
+                    <MudText><MudIcon Icon="@Icons.Filled.Error" Color="Color.Error" Size="Size.Small" /> There are complains recieved about this student</MudText>
+                    }
+                     <MudCard  Elevation="2" Class="mt-2 pa-4">
+                         <MudText Class="mb-2" ><MudIcon Icon="@Icons.Material.Filled.Notes" Size="Size.Small" /> Notes</MudText>
+                         <MudDivider/>
+                         <MudText Typo="Typo.body2" Class="mt-2">@Semester.Notes</MudText>
+                         </MudCard>
+</MudCard>
+<MudButton Class="mt-4 mr-4" OnClick="RemoveStudent" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Delete" Color="Color.Error">REMOVE</MudButton>
+<MudButton Class="mt-4 mr-4" OnClick="Cancel" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" Color="Color.Default">CANCEL</MudButton>
+     </MudPaper>
+
+@code {
+    [Parameter] public string Id { get; set; }
+
+    Current Semester = new Current();
+    All Student = new All();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Semester = await Task.Run(() => _SemesterStudentService.GetEachStudentOfThisSemesterBasedOnIdAsync(Id));
+        Student = await Task.Run(() => _AllStudentService.GetEachStudentBasedOnIdAsync(Id));
+    }
+
+    protected async void RemoveStudent()
+    {
+        Student.IsInCurrentTerm = false;
+        await _AllStudentService.UpdateStudentAsync(Student);
+        await _SemesterStudentService.DeleteCurrentStudentAsync(Semester);
+        _navigationManager.NavigateTo("/SemesterStudents");
+        Snackbar.Add("Student successfully removed from current students database", Severity.Success);
+    }
+
+    void Cancel()
+    {
+        _navigationManager.NavigateTo("/SemesterStudents/ViewStudent/"+Semester.Id);
+    }
+}

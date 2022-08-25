@@ -1,0 +1,96 @@
+﻿@page "/SemesterStudents"
+@using Project.Avalon.Shared.Models
+@using Project.Avalon.Web.Services.Students
+@inject SemesterStudentsService _SemesterStudentService
+@inject NavigationManager _navigationManager
+@using Microsoft.AspNetCore.Components.Web.Extensions.Head
+
+<Title Value="Avalon: Semester Students" />
+
+<MudPaper Class="pa-8 ma-5" Elevation="3">
+ <MudText Class="mb-2"><h1><strong>Semester Students</strong></h1></MudText>
+ <MudCard Elevation="2" Class="mt-4 pa-4">
+     @if (SemesterStudent == null)
+        {
+            <MudProgressLinear Color="Color.Warning" Indeterminate="true" Class="my-7" />
+        }
+         else {
+             <MudTable Items="@SemesterStudent" T="Current" SortLabel="Sort By" Dense="true" Class="pa-4 mt-3">
+                 <HeaderContent>
+                  <MudTh>Student Id</MudTh>
+                  <MudTh>Full Name</MudTh>
+                  <MudTh>Email</MudTh>
+                  <MudTh>Major</MudTh>
+                  <MudTh>Minor</MudTh>
+                  <MudTh>Concentration</MudTh>
+                  <MudTh>College</MudTh>
+                  <MudTh>Department</MudTh>
+                  <MudTh>GPA</MudTh>
+                  <MudTh>Any complains recieved?</MudTh>
+                  <MudTh>Notes</MudTh>
+                  <MudTh>Actions</MudTh>
+                     </HeaderContent>
+                     <RowTemplate>
+                         <MudTd DataLabel="Student Id">@context.Id</MudTd>
+                      <MudTd DataLabel="Full Name">@context.Name</MudTd>
+                      <MudTd DataLabel="Email">@context.Email</MudTd>
+                      <MudTd DataLabel="Major">@context.Major</MudTd>
+                    @if (context.Minor == null)
+                    {
+                        <MudTd DataLabel="Minor">Not Declared</MudTd>
+                    } else
+                    {
+                        <MudTd DataLabel="Minor">@context.Minor</MudTd>
+                    }
+                    @if(context.Concentration == null)
+                    {
+                        <MudTd DataLabel="Concentration">Not Declared</MudTd>
+                    } else
+                    {
+                        <MudTd DataLabel="Concentration">@context.Concentration</MudTd>
+                    }
+                      <MudTd DataLabel="College">@context.College</MudTd>
+                      <MudTd DataLabel="Department">@context.Department</MudTd>
+                    @if(context.GPA == 0.00)
+                    {
+                        <MudTd DataLabel="GPA">Not available at this moment</MudTd>
+                    }else
+                    {
+                        <MudTd DataLabel="GPA">@context.GPA.ToString("N2")</MudTd>
+                    }
+                    @if(context.HasNoComplains == true)
+                    {
+                        <MudTd DataLabel="Any complains recieved?">No complains recieved from other students</MudTd>
+                    } 
+                    else if (context.HasNoComplains == null)
+                    {
+                        <MudTd DataLabel="Any complains recieved?">Not available at this moment</MudTd>
+                    } else 
+                    {
+                        <MudTd DataLabel="Any complains recieved?">There are complains recieved about this student</MudTd>
+                    }
+                    @if (context.Notes.Length <= 75)
+                    {
+                        <MudTd DataLabel="Notes">@context.Notes</MudTd>
+                    } else
+                    {
+                        <MudTd DataLabel="Notes"><b>Click <MudIcon Icon="@Icons.Filled.Preview"/> for more information</b></MudTd>
+                    }
+                    <MudStack Class="py-16 d-flex flex-1" Row="true">
+                    <MudIconButton Href="@($"/SemesterStudents/ViewStudent/{context.Id}")" Icon="@Icons.Filled.Preview" Color="Color.Warning" />
+                    <MudIconButton Href="@($"/SemesterStudents/EditStudent/{context.Id}")" Icon="@Icons.Filled.Edit" Color="Color.Warning" />
+                    <MudIconButton Href="@($"/SemesterStudents/DeleteStudent/{context.Id}")" Icon="@Icons.Filled.Delete" Color="Color.Warning" />
+                </MudStack>
+                         </RowTemplate>
+             </MudTable>
+         }
+     </MudCard>
+ </MudPaper>
+
+@code {
+    List<Current> SemesterStudent;
+    protected override async Task OnInitializedAsync()
+    {
+        SemesterStudent = await Task.Run(() => _SemesterStudentService.GetAllStudentsOfThisSemesterAsync());
+    }
+}

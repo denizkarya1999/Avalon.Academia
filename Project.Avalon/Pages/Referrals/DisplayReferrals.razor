@@ -1,0 +1,59 @@
+﻿@page "/Referrals"
+@using Project.Avalon.Shared.Models
+@using Project.Avalon.Web.Services.Students
+@inject SelectedStudentsService _SelectedStudentService
+@inject NavigationManager _navigationManager
+@using Microsoft.AspNetCore.Components.Web.Extensions.Head
+
+<Title Value="Avalon: Referrals" />
+
+<MudPaper Class="pa-8 ma-5" Elevation="3">
+    <MudText Class="mb-2"><h1><strong>All Referrals</strong></h1></MudText>
+     <MudCard Elevation="2" Class="mt-4 pa-4">
+         @if (Referral == null)
+        {
+            <MudProgressLinear Color="Color.Warning" Indeterminate="true" Class="my-7" />
+        }
+        else {
+             <MudTable Items="@Referral" T="Selected" SortLabel="Sort By" Dense="true" Class="pa-4 mt-3">
+       <HeaderContent>
+           <MudTh>Student Id</MudTh>
+                  <MudTh>Full Name</MudTh>
+                  <MudTh>Email</MudTh>
+                  <MudTh>University</MudTh>
+                  <MudTh>Referral Notes</MudTh>
+                  <MudTh>Actions</MudTh>
+           </HeaderContent>
+           <RowTemplate>
+               <MudTd DataLabel="Student Id">@context.Id</MudTd>
+                      <MudTd DataLabel="Full Name">@context.Name</MudTd>
+                      <MudTd DataLabel="Email">@context.Email</MudTd>
+                      <MudTd DataLabel="University">@context.University</MudTd>
+                      @if (context.ReferralNotes.Length <= 75)
+                    {
+                        <MudTd DataLabel="Notes">@context.ReferralNotes</MudTd>
+                    } else
+                    {
+                        <MudTd DataLabel="Notes"><b>Click <MudIcon Icon="@Icons.Filled.Preview"/> for more information</b></MudTd>
+                    }
+                    <MudIconButton Href="@($"mailto:{context.Email}?subject=Confidential E-Mail&body=Dear%20{context.Name},%0D%0A%0D%0AI%20hope%20you%20are%20doing%20well.%20{Notification}{context.ReferralNotes}{Notification2}")" Icon="@Icons.Filled.Send" Color="Color.Warning" />
+                    <MudIconButton Href="@($"/Referrals/View/{context.Id}")" Icon="@Icons.Filled.Preview" Color="Color.Warning" />
+                 <MudIconButton Href="@($"/Referrals/Edit/{context.Id}")" Icon="@Icons.Filled.Edit" Color="Color.Warning" />
+                    <MudIconButton Href="@($"/Referrals/Delete/{context.Id}")" Icon="@Icons.Filled.Delete" Color="Color.Warning" />
+                </RowTemplate>
+             </MudTable>
+        }
+         </MudCard>
+   </MudPaper>
+
+@code {
+    List<Selected> Referral;
+
+     string Notification = "Based%20on%20the%20performance%20you%20have%20shown%20in%20my%20course%2C%20I%20am%20referring%20you%20for%20the%20position%20you%20mentioned.%20You%20can%20share%20this%20referral%20letter%20with%20your%20employer%3B%0D%0A%0D%0A";
+    string Notification2 = "%0D%0A%0D%0ALet%20me%20know%20if%20you%20have%20any%20questions%20or%20concerns.%0D%0A%0D%0ASincerely%20yours,%0D%0A%0D%0A";
+
+    protected override async Task OnInitializedAsync()
+    {
+         Referral = await Task.Run(() => _SelectedStudentService.GetAllSelectedStudentsAsync());
+    }
+}

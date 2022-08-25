@@ -1,0 +1,85 @@
+﻿@page "/AllStudents/DeleteStudent/{Id}"
+@using Project.Avalon.Shared.Models
+@using Project.Avalon.Web.Services.Students
+@inject AllStudentsService _AllStudentService
+@inject SemesterStudentsService _SemesterStudentService
+@inject SelectedStudentsService _SelectedStudentService
+@inject NavigationManager _navigationManager
+@inject ISnackbar Snackbar
+
+<MudPaper Class="pa-8 ma-5" Elevation="3">
+     <MudText Class="mb-2"><h1><strong>Remove Student</strong></h1></MudText>
+     <MudText Class="mb-2">Are you sure you want to remove the student from all databases? (including Referrals)</MudText>
+     <MudCard Elevation="2" Class="mt-4 pa-4">
+         <MudText Class="mb-2"><h1><strong>@Student.Name</strong></h1></MudText>
+      <MudText><MudIcon Icon="@Icons.Material.Filled.School" Size="Size.Small" /> Studies at @Student.University</MudText>
+      <MudText><MudIcon Icon="@Icons.Material.Filled.CardMembership" Size="Size.Small" /> Assigned ID is @Student.Id</MudText>
+      <MudText><MudIcon Icon="@Icons.Material.Filled.Email" Size="Size.Small" /> Send email through <strong><a href="mailto:@Student.Email"> @Student.Email</a></strong></MudText>
+    <MudText><MudIcon Icon="@Icons.Material.Filled.Book" Size="Size.Small" /> Majoring in @Student.Major</MudText>
+    @if (Student.Minor == null)
+                    {
+                    } else
+                    {
+                        <MudText><MudIcon Icon="@Icons.Filled.BookmarkBorder" Size="Size.Small" /> Minoring in @Student.Minor</MudText>
+                    }
+    @if (Student.Concentration == null)
+                    {
+                    } else
+                    {
+                        <MudText><MudIcon Icon="@Icons.Material.Filled.PushPin" Size="Size.Small" /> Concentrated on @Student.Concentration</MudText>
+                    }
+     <MudText><MudIcon Icon="@Icons.Material.Filled.Business" Size="Size.Small" /> Is affiliated with @Student.College</MudText>
+     <MudText><MudIcon Icon="@Icons.Material.Filled.ContactPhone" Size="Size.Small" /> @Student.Department can be contacted</MudText>
+     <MudText><MudIcon Icon="@Icons.Material.Filled.CalendarMonth" Size="Size.Small" /> Admitted in @Student.AdmitTerm Semester</MudText>
+     <MudText><MudIcon Icon="@Icons.Material.Filled.Score" Size="Size.Small" /> Has @Student.GPA.ToString("N2") GPA</MudText>
+     <MudText><MudIcon Icon="@Icons.Material.Filled.IncompleteCircle" Size="Size.Small" /> Completed @Student.CreditsCompleted Credits</MudText>
+     <MudText><MudIcon Icon="@Icons.Material.Filled.Grading" Size="Size.Small" /> Expected to graduate on @GradDate</MudText>
+     @if(Student.HasGoodAcademicStanding == true)
+                    {
+                    <MudText><MudIcon Icon="@Icons.Filled.Check" Color="Color.Success" Size="Size.Small" /> Has a good academic standing</MudText>
+                    }
+                    else
+                    {
+                    <MudText><MudIcon Icon="@Icons.Filled.Error" Color="Color.Error" Size="Size.Small" /> Does not have a good academic standing</MudText>
+                    }
+         </MudCard>
+<MudButton Class="mt-4 mr-4" OnClick="RemoveStudent" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Delete" Color="Color.Error">REMOVE</MudButton>
+<MudButton Class="mt-4 mr-4" OnClick="Cancel" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Cancel" Color="Color.Default">CANCEL</MudButton>
+ </MudPaper>
+
+@code {
+    [Parameter] public string Id { get; set; }
+    All Student = new All();
+    Current Semester = new Current();
+    Selected Referral = new Selected();
+
+    String GradDate = new String("");
+    protected override async Task OnInitializedAsync()
+    {
+        Student = await Task.Run(() => _AllStudentService.GetEachStudentBasedOnIdAsync(Id));
+        Semester = await Task.Run(() => _SemesterStudentService.GetEachStudentOfThisSemesterBasedOnIdAsync(Id));
+        Referral = await Task.Run(() => _SelectedStudentService.GetEachSelectedStudentSemesterBasedOnIdAsync(Id));
+
+        GradDate = Student.GraduationDate.ToString().Substring(0,Student.GraduationDate.ToString().IndexOf(" "));
+    }
+
+    protected async void RemoveStudent()
+    {
+        if (Semester != null)
+        {
+            await _SemesterStudentService.DeleteCurrentStudentAsync(Semester);
+        }
+        if (Referral != null)
+        {
+            await _SelectedStudentService.DeleteSelectedStudentAsync(Referral);
+        }
+        await _AllStudentService.DeleteStudentAsync(Student);
+        _navigationManager.NavigateTo("/AllStudents");
+        Snackbar.Add("Student successfully removed from both databases", Severity.Success);
+    }
+
+    void Cancel()
+    {
+        _navigationManager.NavigateTo("/AllStudents/ViewStudent/"+Student.Id);
+    }
+}

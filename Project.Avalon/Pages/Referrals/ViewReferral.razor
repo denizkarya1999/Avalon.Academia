@@ -1,0 +1,34 @@
+﻿@page "/Referrals/View/{Id}"
+@using Project.Avalon.Shared.Models
+@using Project.Avalon.Web.Services.Students
+@inject SelectedStudentsService _SelectedStudentService
+@inject NavigationManager _navigationManager
+@inject ISnackbar Snackbar
+
+<MudPaper Class="pa-8 ma-5" Elevation="3">
+    <MudText Class="mb-2"><h1><strong>@Referral.Name</strong></h1></MudText>
+    <MudText><MudIcon Icon="@Icons.Material.Filled.School" Size="Size.Small" /> Studies at @Referral.University</MudText>
+     <MudText><MudIcon Icon="@Icons.Material.Filled.CardMembership" Size="Size.Small" /> Assigned ID is @Referral.Id</MudText>
+     <MudText><MudIcon Icon="@Icons.Material.Filled.Email" Size="Size.Small" /> Send email through <strong><a href="mailto:@Referral.Email"> @Referral.Email</a></strong></MudText>
+     <MudCard  Elevation="2" Class="mt-2 pa-4">
+                         <MudText Class="mb-2" ><MudIcon Icon="@Icons.Material.Filled.Notes" Size="Size.Small" /> Referral Notes</MudText>
+                         <MudDivider Class="mb-2"/>
+                         <MudText Typo="Typo.body2">@Referral.ReferralNotes</MudText>
+     </MudCard>
+     <MudButton Class="mt-4 mr-4" Href="@($"mailto:{Referral.Email}?subject=Confidential E-Mail&body=Dear%20{Referral.Name},%0D%0A%0D%0AI%20hope%20you%20are%20doing%20well.%20{Notification}{Referral.ReferralNotes}{Notification2}")" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Send" Color="Color.Success">LET THEM KNOW ABOUT REFERRAL</MudButton>
+     <MudButton Class="mt-4 mr-4" Href="@($"/Referrals/Edit/{Referral.Id}")" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Edit" Color="Color.Warning">EDIT REFERRAL</MudButton>
+     <MudButton Class="mt-4 mr-4" Variant="Variant.Filled" Href="@($"/Referrals/Delete/{Referral.Id}")" StartIcon="@Icons.Material.Filled.Delete" Color="Color.Error">REMOVE REFERRAL</MudButton>
+  </MudPaper>
+
+@code {
+    [Parameter] public string Id { get; set; }
+
+    Selected Referral = new Selected();
+    string Notification = "Based%20on%20the%20performance%20you%20have%20shown%20in%20my%20course%2C%20I%20am%20referring%20you%20for%20the%20position%20you%20mentioned.%20You%20can%20share%20this%20referral%20letter%20with%20your%20employer%3B%0D%0A%0D%0A";
+    string Notification2 = "%0D%0A%0D%0ALet%20me%20know%20if%20you%20have%20any%20questions%20or%20concerns.%0D%0A%0D%0ASincerely%20yours,%0D%0A%0D%0A";
+
+    protected override async Task OnInitializedAsync()
+    {
+        Referral = await Task.Run(() => _SelectedStudentService.GetEachSelectedStudentSemesterBasedOnIdAsync(Id));
+    }
+}

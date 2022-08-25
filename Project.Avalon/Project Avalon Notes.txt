@@ -1,0 +1,129 @@
+Topic
+########################################
+Problem: Professors forgot who they can refer to because they have a lot of students in their class and Canvas only saves active students or current terms students.
+Solution: Develop a database web application to help professors register every student they dealt with since start of their career and let them select the brightest students
+          for referal
+
+Expected Completion Date
+########################################
+ August 21st 2022
+
+Database Objects
+########################################
+All Students Database:
+ Student Id - String
+ Student Name - String
+ Student Email - String
+ University - String
+ Major - String
+ Minor - String
+ Concentration - String
+ College - String
+ Department - String
+ Admit Term - String
+ GPA - Double
+ Credits Completed - Integer
+ Expected/Completed Graduation Date - DateTime?
+ HasGoodAcademicStanding - bool
+ IsSelectedForReferral - bool
+ IsInCurrentTerm - bool
+
+Semester Students Database:
+ Student Id - String
+ Student Name - String
+ Student Email - String
+ Major - String
+ Minor - String
+ Concentration - String
+ College - String
+ Department - String
+ GPA - Double
+ No complains? - bool
+ Notes - String
+ IsSelectedForReferral - bool
+
+Selected for Referral 
+ Student Id - String
+ University - String
+ Student Name - String
+ Student E-Mail - String
+ Referral Notes - String
+
+Database Seeding
+########################################
+All Students Database:
+ Student Id - 9102 4795
+ Student Name - Deniz Acikbas
+ Student Email - dacikbas@umich.edu
+ University - University of Michigan-Dearborn
+ Major - Computer and Information Science
+ Minor - Not available
+ Concentration - Game Design
+ College - College of Engineering & Computer Science
+ Department - Computer and Information Science Department
+ Admit Term - Winter 2021
+ GPA - 3.0
+ Credits Completed - 59
+ Expected/Completed Graduation Date - December 2024
+ HasGoodAcademicStanding - True
+ IsSelectedForReferral - False
+
+Functions
+########################################
+ All Students Database:
+  * Create
+  * Read All 
+  * Read Each
+  * Update
+     Also update: Semester Students Database, Selected for Referral 
+  * Delete
+     Also delete: Semester Students Database, Selected for Referral
+  * Transfer: Semester Students Database, Selected for Referral
+
+ Semester Students Database: 
+  * Read All 
+  * Read Each
+  * Update
+     Also update: All Students Database, Selected for Referral 
+  * Delete
+  * Transfer: Selected for Referral
+
+ Selected for Referral:
+  * Read All 
+  * Read Each
+  * Update
+     Also update: All Students Database, Semester Students Database 
+  * Delete
+
+Web App Structure
+########################################
+ Local or Azure Server
+
+ Shared:
+  # Model
+  # DBContext
+
+ xUnit (if possible):
+  # Test for all services
+  
+ Web:
+  # Program.cs & appsettings.json
+    * SQL & EF Core Injections
+  # Services
+  # Pages & Components
+  # Dialogboxes
+  # Index
+
+Technologies
+########################################
+C#
+HTML/CSS
+Microsoft SQL Server
+Local Server
+Entity Framework Core
+Blazor Server
+Github (to post the source code)
+
+Resources
+########################################
+https://www.c-sharpcorner.com/article/blazor-crud-app-using-entity-framework-core-in-net-5/
